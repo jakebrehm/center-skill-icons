@@ -16,7 +16,9 @@ import net.runelite.client.plugins.PluginDescriptor;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Center Skill Icons"
+	name = "Center Skill Icons",
+	description = "Better position the icons in the skills panel",
+	tags = {"skills", "icons", "center", "fix"}
 )
 public class CenterSkillIconsPlugin extends Plugin
 {
