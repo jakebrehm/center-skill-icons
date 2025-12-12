@@ -20,7 +20,6 @@ import net.runelite.client.plugins.PluginDescriptor;
 )
 public class CenterSkillIconsPlugin extends Plugin
 {
-
 	private static final int SCRIPT_ID_STATS_INIT = 394;
 	private static final int SCRIPT_ID_STATS_REFRESH = 393;
 	private static final int WIDGET_CHILD_ID_MASK = 0xFFFF;
@@ -56,8 +55,10 @@ public class CenterSkillIconsPlugin extends Plugin
 
 	private void storeCurrentPositions() {
 		if (originalPositions != null) return;
+
 		Widget skillsPanel = client.getWidget(InterfaceID.Stats.UNIVERSE);
 		if (skillsPanel == null) return;
+
 		HashMap<Skill, Coordinate> temporary = new HashMap<>();
 		for (Widget skillWidget : skillsPanel.getStaticChildren()) {
 			int idx = getChildId(skillWidget.getId()) - 1;
@@ -67,40 +68,25 @@ public class CenterSkillIconsPlugin extends Plugin
 			if (icon == null) continue;
 			temporary.put(skillData.skill, new Coordinate(icon.getOriginalX(), icon.getOriginalY()));
 		}
+
 		if (!temporary.isEmpty() && (temporary.values().toArray().length == SkillData.values().length)) {
 			originalPositions = temporary;
 		}
 	}
 
 	private void updatePositions() {
-		if (originalPositions != null) {
-			Widget skillsPanel = client.getWidget(InterfaceID.Stats.UNIVERSE);
-			if (skillsPanel == null) return;
-			for (Widget skillWidget : skillsPanel.getStaticChildren()) {
-				int idx = getChildId(skillWidget.getId()) - 1;
-				SkillData skillData = SkillData.get(idx);
-				if (skillData == null) continue;
-				Widget icon = skillWidget.getChild(SKILL_ICON_INDEX);
-				if (icon == null) continue;
-				moveWidget(icon, skillData.newX, skillData.newY);
-			}
-		}
+		if (originalPositions == null) return;
+		setPositions(SkillData.mapping());
 	}
 
 	private void resetPositions() {
 		if (originalPositions == null) return;
-		Widget skillsPanel = client.getWidget(InterfaceID.Stats.UNIVERSE);
-		if (skillsPanel == null) return;
-		for (Widget skillWidget : skillsPanel.getStaticChildren()) {
-			int idx = getChildId(skillWidget.getId()) - 1;
-			SkillData skillData = SkillData.get(idx);
-			if (skillData == null) continue;
-			Widget icon = skillWidget.getChild(SKILL_ICON_INDEX);
-			if (icon == null) continue;
-			Coordinate coordinates = originalPositions.get(skillData.skill);
-			moveWidget(icon, coordinates.getX(), coordinates.getY());
-		}
+		setPositions(originalPositions);
 		originalPositions = null;
+	}
+
+	private int getChildId(int id) {
+		return id & WIDGET_CHILD_ID_MASK;
 	}
 
 	private void moveWidget(Widget widget, int x, int y) {
@@ -109,7 +95,18 @@ public class CenterSkillIconsPlugin extends Plugin
 		widget.revalidate();
 	}
 
-	private int getChildId(int id) {
-		return id & WIDGET_CHILD_ID_MASK;
+	private void setPositions(HashMap<Skill, Coordinate> mapping) {
+		Widget skillsPanel = client.getWidget(InterfaceID.Stats.UNIVERSE);
+		if (skillsPanel == null) return;
+
+		for (Widget skillWidget : skillsPanel.getStaticChildren()) {
+			int idx = getChildId(skillWidget.getId()) - 1;
+			SkillData skillData = SkillData.get(idx);
+			if (skillData == null) continue;
+			Widget icon = skillWidget.getChild(SKILL_ICON_INDEX);
+			if (icon == null) continue;
+			Coordinate coordinates = mapping.get(skillData.skill);
+			moveWidget(icon, coordinates.getX(), coordinates.getY());
+		}
 	}
 }

@@ -1,5 +1,7 @@
 package com.centerskillicons;
 
+import java.util.HashMap;
+
 import lombok.AllArgsConstructor;
 import net.runelite.api.Skill;
 
@@ -37,5 +39,14 @@ enum SkillData {
     static SkillData get(int idx) {
         if (idx < 0 || idx >= values().length) return null;
         return values()[idx];
+    }
+
+    static HashMap<Skill, Coordinate> mapping() {
+        HashMap<Skill, Coordinate> result = new HashMap<>();
+        for (int i = 0; i < values().length; i++) {
+            SkillData skillData = values()[i];
+            result.put(skillData.skill, new Coordinate(skillData.newX, skillData.newY));
+        }
+        return result;
     }
 }
