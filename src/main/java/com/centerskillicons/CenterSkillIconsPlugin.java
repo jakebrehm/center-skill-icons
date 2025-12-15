@@ -91,7 +91,7 @@ public class CenterSkillIconsPlugin extends Plugin
 	 */
 	public void updateConfig() {
 		if (preferredPositions == null) {
-			preferredPositions = new HashMap<Skill, Coordinate>();
+			preferredPositions = new HashMap<>();
 		}
 		preferredPositions.put(SkillData.ATTACK.skill, new Coordinate(config.positionAttackX(), config.positionAttackY()));
 		preferredPositions.put(SkillData.STRENGTH.skill, new Coordinate(config.positionStrengthX(), config.positionStrengthY()));
