@@ -28,7 +28,8 @@ public class CenterSkillIconsPlugin extends Plugin
 	private static final int SCRIPT_ID_STATS_INIT = 394;
 	private static final int SCRIPT_ID_STATS_REFRESH = 393;
 	private static final int WIDGET_CHILD_ID_MASK = 0xFFFF;
-	private static final int SKILL_ICON_INDEX = 2; // NOTE: Possibly not always correctly
+	private static final int SKILL_ICON_BACKGROUND_INDEX = 2; // NOTE: Subject to change--find dynamically?
+	private static final int SKILL_ICON_FOREGROUND_INDEX = 3; // NOTE: Subject to change--find dynamically?
 	private HashMap<Skill, Coordinate> originalPositions;
 	private HashMap<Skill, Coordinate> preferredPositions; // Configuration variable
 
@@ -137,7 +138,7 @@ public class CenterSkillIconsPlugin extends Plugin
 			int idx = getChildId(skillWidget.getId()) - 1;
 			SkillData skillData = SkillData.get(idx);
 			if (skillData == null) continue;
-			Widget icon = skillWidget.getChild(SKILL_ICON_INDEX);
+			Widget icon = skillWidget.getChild(SKILL_ICON_FOREGROUND_INDEX);
 			if (icon == null) continue;
 			temporary.put(skillData.skill, new Coordinate(icon.getOriginalX(), icon.getOriginalY()));
 		}
@@ -203,11 +204,15 @@ public class CenterSkillIconsPlugin extends Plugin
 			int idx = getChildId(skillWidget.getId()) - 1;
 			SkillData skillData = SkillData.get(idx);
 			if (skillData == null) continue;
-			Widget icon = skillWidget.getChild(SKILL_ICON_INDEX);
-			if (icon == null) continue;
-			Coordinate coordinates = mapping.get(skillData.skill);
-			if (coordinates == null) continue;
-			moveWidget(icon, coordinates.getX(), coordinates.getY());
+			// Change positions of both the foreground and background for the skill icons
+			int[] indexes = {SKILL_ICON_FOREGROUND_INDEX, SKILL_ICON_BACKGROUND_INDEX};
+			for (int index : indexes) {
+				Widget icon = skillWidget.getChild(index);
+				if (icon == null) continue;
+				Coordinate coordinates = mapping.get(skillData.skill);
+				if (coordinates == null) continue;
+				moveWidget(icon, coordinates.getX(), coordinates.getY());
+			}
 		}
 	}
 
